@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEO-HEALTH 智慧科技 BMI 健康分析 Suite</title>
+    <title>NEO-HEALTH 智慧科技 BMI 健康分析 & WHO 衛教 Suite</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for futuristic icons -->
+    <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Google Fonts: Orbitron & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <script>
@@ -113,35 +115,10 @@
             -moz-appearance: textfield;
         }
 
-        /* Needle rotation */
-        #gaugeNeedle {
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: 100px 100px;
-        }
-
         /* Scanning line effect */
         .scanline {
             background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 254, 0.03) 51%);
             background-size: 100% 4px;
-        }
-
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            .no-print {
-                display: none !important;
-            }
-            .glass-panel, .glass-panel-glow {
-                background: white !important;
-                border: 1px solid #ccc !important;
-                box-shadow: none !important;
-                color: black !important;
-            }
-            .text-white, .text-gray-300, .text-gray-400 {
-                color: black !important;
-            }
         }
     </style>
 </head>
@@ -156,7 +133,7 @@
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-wider font-tech bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400">
                     NEO-HEALTH <span class="text-xs sm:text-sm px-2.5 py-0.5 rounded-full border border-cyan-500/40 text-cyan-400 uppercase tracking-widest font-sans ml-2 bg-cyan-500/10 shadow-[0_0_12px_rgba(0,242,254,0.3)]">AI SUITE LHU</span>
                 </h1>
-                <p class="text-xs sm:text-sm text-gray-400 font-light">前瞻次世代 BMI 生態數據與 AI 智慧處方診斷系統</p>
+                <p class="text-xs sm:text-sm text-gray-400 font-light">前瞻次世代 BMI 生態數據、AI 智慧處方診斷與 WHO 衛教體系</p>
             </div>
         </div>
 
@@ -174,420 +151,648 @@
         </div>
     </header>
 
-    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="w-full max-w-6xl space-y-8">
 
-        <section class="lg:col-span-5 flex flex-col gap-6">
-            <div class="glass-panel rounded-3xl p-6 sm:p-7 relative overflow-hidden">
-                <div class="absolute -right-12 -top-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl"></div>
+        <!-- 1. Calculator & Dynamic Gauge Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-cyan-400"></i> 生理數據設定
-                    </h2>
-                    <span class="text-xs text-cyan-400/80 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">雙向同步演算</span>
-                </div>
+            <!-- Inputs Panel -->
+            <section class="lg:col-span-5 flex flex-col gap-6">
+                <div class="glass-panel rounded-3xl p-6 sm:p-7 relative overflow-hidden">
+                    <div class="absolute -right-12 -top-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl"></div>
 
-                <!-- Input Controls -->
-                <div class="space-y-5">
-                    <!-- Gender Selection -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">生理性別</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button type="button" id="genderMale" onclick="setGender('male')" 
-                                class="py-2.5 px-4 rounded-xl border border-cyan-500/50 bg-cyan-500/15 text-cyan-300 font-medium flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/10">
-                                <i class="fa-solid fa-mars text-base"></i> 男性 (Male)
-                            </button>
-                            <button type="button" id="genderFemale" onclick="setGender('female')" 
-                                class="py-2.5 px-4 rounded-xl border border-gray-700 bg-gray-800/40 text-gray-400 font-medium flex items-center justify-center gap-2 transition-all hover:border-gray-600">
-                                <i class="fa-solid fa-venus text-base"></i> 女性 (Female)
-                            </button>
-                        </div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-cyan-400"></i> 生理數據設定
+                        </h2>
+                        <span class="text-xs text-cyan-400/80 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">雙向同步演算</span>
                     </div>
 
-                    <!-- Age Input -->
-                    <div>
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <label class="font-semibold text-gray-400 uppercase tracking-wider">年齡 (歲)</label>
-                            <input type="number" id="ageInput" min="10" max="100" value="28" oninput="syncFromInput('age')"
-                                class="w-16 bg-gray-900/90 border border-cyan-500/40 rounded-lg px-2 py-0.5 text-cyan-400 font-tech font-bold text-center text-sm focus:outline-none focus:border-cyan-400 shadow-inner">
+                    <!-- Input Controls -->
+                    <div class="space-y-5">
+                        <!-- Gender Selection -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">生理性別</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" id="genderMale" onclick="setGender('male')" 
+                                    class="py-2.5 px-4 rounded-xl border border-cyan-500/50 bg-cyan-500/15 text-cyan-300 font-medium flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/10">
+                                    <i class="fa-solid fa-mars text-base"></i> 男性 (Male)
+                                </button>
+                                <button type="button" id="genderFemale" onclick="setGender('female')" 
+                                    class="py-2.5 px-4 rounded-xl border border-gray-700 bg-gray-800/40 text-gray-400 font-medium flex items-center justify-center gap-2 transition-all hover:border-gray-600">
+                                    <i class="fa-solid fa-venus text-base"></i> 女性 (Female)
+                                </button>
+                            </div>
                         </div>
-                        <input type="range" id="ageSlider" min="10" max="100" value="28" class="w-full" oninput="syncFromSlider('age')">
-                    </div>
 
-                    <!-- Height Input -->
-                    <div>
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <label class="font-semibold text-gray-400 uppercase tracking-wider">身高 (CM)</label>
-                            <input type="number" id="heightInput" min="100" max="220" value="175" oninput="syncFromInput('height')"
-                                class="w-16 bg-gray-900/90 border border-cyan-500/40 rounded-lg px-2 py-0.5 text-cyan-400 font-tech font-bold text-center text-sm focus:outline-none focus:border-cyan-400 shadow-inner">
+                        <!-- Age Input -->
+                        <div>
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label class="font-semibold text-gray-400 uppercase tracking-wider">年齡 (歲)</label>
+                                <input type="number" id="ageInput" min="10" max="100" value="28" oninput="syncFromInput('age')"
+                                    class="w-16 bg-gray-900/90 border border-cyan-500/40 rounded-lg px-2 py-0.5 text-cyan-400 font-tech font-bold text-center text-sm focus:outline-none focus:border-cyan-400 shadow-inner">
+                            </div>
+                            <input type="range" id="ageSlider" min="10" max="100" value="28" class="w-full" oninput="syncFromSlider('age')">
                         </div>
-                        <input type="range" id="heightSlider" min="100" max="220" value="175" class="w-full" oninput="syncFromSlider('height')">
-                    </div>
 
-                    <!-- Weight Input -->
-                    <div>
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <label class="font-semibold text-gray-400 uppercase tracking-wider">體重 (KG)</label>
-                            <input type="number" id="weightInput" min="30" max="180" step="0.5" value="68" oninput="syncFromInput('weight')"
-                                class="w-16 bg-gray-900/90 border border-cyan-500/40 rounded-lg px-2 py-0.5 text-cyan-400 font-tech font-bold text-center text-sm focus:outline-none focus:border-cyan-400 shadow-inner">
+                        <!-- Height Input -->
+                        <div>
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label class="font-semibold text-gray-400 uppercase tracking-wider">身高 (CM)</label>
+                                <input type="number" id="heightInput" min="100" max="220" value="175" oninput="syncFromInput('height')"
+                                    class="w-16 bg-gray-900/90 border border-cyan-500/40 rounded-lg px-2 py-0.5 text-cyan-400 font-tech font-bold text-center text-sm focus:outline-none focus:border-cyan-400 shadow-inner">
+                            </div>
+                            <input type="range" id="heightSlider" min="100" max="220" value="175" class="w-full" oninput="syncFromSlider('height')">
                         </div>
-                        <input type="range" id="weightSlider" min="30" max="180" step="0.5" value="68" class="w-full" oninput="syncFromSlider('weight')">
-                    </div>
 
-                    <!-- Activity Level -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">日常活動強度 (估算 TDEE)</label>
-                        <select id="activitySelect" onchange="updateValues()" class="w-full bg-gray-900 border border-gray-700 text-gray-200 text-xs rounded-xl p-2.5 focus:border-cyan-400 focus:outline-none shadow-sm">
-                            <option value="1.2">久坐 / 辦公室工作幾乎不運動 (1.2x)</option>
-                            <option value="1.375" selected>輕量運動 / 每週運動 1-3 天 (1.375x)</option>
-                            <option value="1.55">中度運動 / 每週運動 3-5 天 (1.55x)</option>
-                            <option value="1.725">高強度運動 / 每週運動 6-7 天 (1.725x)</option>
-                        </select>
-                    </div>
-
-                    <!-- Dynamic Metrics Summary -->
-                    <div class="p-4 rounded-2xl bg-gray-900/80 border border-gray-800 space-y-2">
-                        <div class="flex justify-between text-xs">
-                            <span class="text-gray-400">標準理想體重區間：</span>
-                            <span id="idealWeightRange" class="font-bold text-emerald-400 font-tech">56.7 - 73.5 kg</span>
+                        <!-- Weight Input -->
+                        <div>
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label class="font-semibold text-gray-400 uppercase tracking-wider">體重 (KG)</label>
+                                <input type="number" id="weightInput" min="30" max="180" step="0.5" value="68" oninput="syncFromInput('weight')"
+                                    class="w-16 bg-gray-900/90 border border-cyan-500/40 rounded-lg px-2 py-0.5 text-cyan-400 font-tech font-bold text-center text-sm focus:outline-none focus:border-cyan-400 shadow-inner">
+                            </div>
+                            <input type="range" id="weightSlider" min="30" max="180" step="0.5" value="68" class="w-full" oninput="syncFromSlider('weight')">
                         </div>
-                        <div class="flex justify-between text-xs">
-                            <span class="text-gray-400">黃金標準 BMI 基準：</span>
-                            <span class="font-bold text-cyan-400 font-tech">22.0</span>
+
+                        <!-- Activity Level -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">日常活動強度 (估算 TDEE)</label>
+                            <select id="activitySelect" onchange="updateValues()" class="w-full bg-gray-900 border border-gray-700 text-gray-200 text-xs rounded-xl p-2.5 focus:border-cyan-400 focus:outline-none shadow-sm">
+                                <option value="1.2">久坐 / 辦公室工作幾乎不運動 (1.2x)</option>
+                                <option value="1.375" selected>輕量運動 / 每週運動 1-3 天 (1.375x)</option>
+                                <option value="1.55">中度運動 / 每週運動 3-5 天 (1.55x)</option>
+                                <option value="1.725">高強度運動 / 每週運動 6-7 天 (1.725x)</option>
+                            </select>
                         </div>
-                        <div class="flex justify-between text-xs border-t border-gray-800/80 pt-1.5">
-                            <span class="text-gray-400">衛福部建議腰圍上限：</span>
-                            <span id="waistRecommendation" class="font-bold text-purple-400 font-tech">男 &lt; 90 cm</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section class="lg:col-span-7 flex flex-col gap-6">
-
-            <!-- Vertical Gauge Speedometer Panel -->
-            <div class="glass-panel rounded-3xl p-6 sm:p-7 relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
-                
-                <!-- Vertical Meter Scale Container -->
-                <div class="relative w-full sm:w-48 h-64 flex flex-row sm:flex-col items-center justify-center shrink-0 gap-4">
-                    <div class="relative w-36 h-full flex items-center justify-center">
-                        <svg class="w-full h-full drop-shadow-[0_0_15px_rgba(0,242,254,0.15)]" viewBox="0 0 130 220">
-                            <defs>
-                                <filter id="indicatorGlow" x="-30%" y="-30%" width="160%" height="160%">
-                                    <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00f2fe" flood-opacity="0.9"/>
-                                </filter>
-                                <linearGradient id="meterTrackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#ef4444" />
-                                    <stop offset="25%" stop-color="#f97316" />
-                                    <stop offset="40%" stop-color="#f59e0b" />
-                                    <stop offset="55%" stop-color="#10b981" />
-                                    <stop offset="100%" stop-color="#3b82f6" />
-                                </linearGradient>
-                            </defs>
-
-                            <!-- Vertical Background Track -->
-                            <rect x="52" y="15" width="16" height="190" rx="8" fill="#0f172a" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
-
-                            <!-- Colored Vertical Segments (Top to Bottom: Severe Obese to Underweight) -->
-                            <!-- Severe Obese >= 30 -->
-                            <rect x="55" y="18" width="10" height="40" rx="4" fill="#ef4444" opacity="0.9"/>
-                            <!-- Mild/Moderate Obese 27 - 30 -->
-                            <rect x="55" y="60" width="10" height="24" rx="2" fill="#f97316" opacity="0.9"/>
-                            <!-- Overweight 24 - 27 -->
-                            <rect x="55" y="86" width="10" height="24" rx="2" fill="#f59e0b" opacity="0.9"/>
-                            <!-- Normal 18.5 - 24 -->
-                            <rect x="55" y="112" width="10" height="42" rx="2" fill="#10b981" opacity="0.95"/>
-                            <!-- Underweight < 18.5 -->
-                            <rect x="55" y="156" width="10" height="46" rx="4" fill="#3b82f6" opacity="0.85"/>
-
-                            <!-- Scale Tick Marks & Labels (Right Side) -->
-                            <line x1="68" y1="18" x2="76" y2="18" stroke="#94a3b8" stroke-width="1.5"/>
-                            <text x="82" y="21" fill="#ef4444" font-size="8" font-family="Orbitron" font-weight="bold">35.0</text>
-
-                            <line x1="68" y1="60" x2="76" y2="60" stroke="#94a3b8" stroke-width="1.5"/>
-                            <text x="82" y="63" fill="#f97316" font-size="8" font-family="Orbitron" font-weight="bold">30.0</text>
-
-                            <line x1="68" y1="86" x2="76" y2="86" stroke="#94a3b8" stroke-width="1.5"/>
-                            <text x="82" y="89" fill="#f59e0b" font-size="8" font-family="Orbitron" font-weight="bold">27.0</text>
-
-                            <line x1="68" y1="112" x2="76" y2="112" stroke="#94a3b8" stroke-width="1.5"/>
-                            <text x="82" y="115" fill="#10b981" font-size="8" font-family="Orbitron" font-weight="bold">24.0</text>
-
-                            <line x1="68" y1="156" x2="76" y2="156" stroke="#94a3b8" stroke-width="1.5"/>
-                            <text x="82" y="159" fill="#3b82f6" font-size="8" font-family="Orbitron" font-weight="bold">18.5</text>
-
-                            <!-- Vertical Moving Indicator Needle / Pointer Group -->
-                            <g id="verticalIndicator" filter="url(#indicatorGlow)" style="transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
-                                <!-- Left Pointer Arrow -->
-                                <polygon points="34,0 48,-6 48,6" fill="#00f2fe"/>
-                                <!-- Indicator Horizontal Bar across track -->
-                                <rect x="48" y="-2" width="24" height="4" rx="2" fill="#ffffff"/>
-                                <circle cx="34" cy="0" r="3" fill="#00f2fe"/>
-                            </g>
-                        </svg>
-                    </div>
-
-                    <!-- Clean Separated HUD Score Box -->
-                    <div class="flex flex-col items-center justify-center bg-gray-950/80 px-4 py-2 rounded-2xl border border-cyan-500/30 shadow-lg shadow-cyan-500/10 backdrop-blur-md min-w-[110px]">
-                        <div class="flex items-baseline gap-1">
-                            <span id="bmiScore" class="text-3xl font-black font-tech bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 tracking-wider">
-                                22.2
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                            <span class="text-[10px] text-gray-400 font-tech tracking-widest uppercase">BMI 實時數值</span>
+                        <!-- Dynamic Metrics Summary -->
+                        <div class="p-4 rounded-2xl bg-gray-900/80 border border-gray-800 space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-400">標準理想體重區間：</span>
+                                <span id="idealWeightRange" class="font-bold text-emerald-400 font-tech">56.7 - 73.5 kg</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-400">黃金標準 BMI 基準：</span>
+                                <span class="font-bold text-cyan-400 font-tech">22.0</span>
+                            </div>
+                            <div class="flex justify-between text-xs border-t border-gray-800/80 pt-1.5">
+                                <span class="text-gray-400">衛福部建議腰圍上限：</span>
+                                <span id="waistRecommendation" class="font-bold text-purple-400 font-tech">男 &lt; 90 cm</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Instant Status Analysis -->
-                <div class="flex-1 w-full space-y-3 text-center md:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider" id="statusBadge">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span id="statusText">體重健康正常 (Normal)</span>
-                    </div>
+            <!-- Status Output & Gauge -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
 
-                    <h3 id="headlineTip" class="text-lg font-bold text-white">體態極為理想，請繼續保持優良生活習慣！</h3>
+                <!-- Vertical Gauge Speedometer Panel -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-7 relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
                     
-                    <p id="shortAdvice" class="text-xs text-gray-300 leading-relaxed">
-                        您的 BMI 處於黃金標準區間。體內脂肪率與肌肉質量維持著良好平衡，患有慢性與代謝疾病之風險極低。
+                    <div class="relative w-full sm:w-48 h-64 flex flex-row sm:flex-col items-center justify-center shrink-0 gap-4">
+                        <div class="relative w-36 h-full flex items-center justify-center">
+                            <svg class="w-full h-full drop-shadow-[0_0_15px_rgba(0,242,254,0.15)]" viewBox="0 0 130 220">
+                                <defs>
+                                    <filter id="indicatorGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00f2fe" flood-opacity="0.9"/>
+                                    </filter>
+                                </defs>
+
+                                <rect x="52" y="15" width="16" height="190" rx="8" fill="#0f172a" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+
+                                <rect x="55" y="18" width="10" height="40" rx="4" fill="#ef4444" opacity="0.9"/>
+                                <rect x="55" y="60" width="10" height="24" rx="2" fill="#f97316" opacity="0.9"/>
+                                <rect x="55" y="86" width="10" height="24" rx="2" fill="#f59e0b" opacity="0.9"/>
+                                <rect x="55" y="112" width="10" height="42" rx="2" fill="#10b981" opacity="0.95"/>
+                                <rect x="55" y="156" width="10" height="46" rx="4" fill="#3b82f6" opacity="0.85"/>
+
+                                <line x1="68" y1="18" x2="76" y2="18" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="82" y="21" fill="#ef4444" font-size="8" font-family="Orbitron" font-weight="bold">35.0</text>
+
+                                <line x1="68" y1="60" x2="76" y2="60" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="82" y="63" fill="#f97316" font-size="8" font-family="Orbitron" font-weight="bold">30.0</text>
+
+                                <line x1="68" y1="86" x2="76" y2="86" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="82" y="89" fill="#f59e0b" font-size="8" font-family="Orbitron" font-weight="bold">27.0</text>
+
+                                <line x1="68" y1="112" x2="76" y2="112" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="82" y="115" fill="#10b981" font-size="8" font-family="Orbitron" font-weight="bold">24.0</text>
+
+                                <line x1="68" y1="156" x2="76" y2="156" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="82" y="159" fill="#3b82f6" font-size="8" font-family="Orbitron" font-weight="bold">18.5</text>
+
+                                <g id="verticalIndicator" filter="url(#indicatorGlow)" style="transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                    <polygon points="34,0 48,-6 48,6" fill="#00f2fe"/>
+                                    <rect x="48" y="-2" width="24" height="4" rx="2" fill="#ffffff"/>
+                                    <circle cx="34" cy="0" r="3" fill="#00f2fe"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center bg-gray-950/80 px-4 py-2 rounded-2xl border border-cyan-500/30 shadow-lg shadow-cyan-500/10 backdrop-blur-md min-w-[110px]">
+                            <div class="flex items-baseline gap-1">
+                                <span id="bmiScore" class="text-3xl font-black font-tech bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 tracking-wider">
+                                    22.2
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                                <span class="text-[10px] text-gray-400 font-tech tracking-widest uppercase">BMI 實時數值</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 w-full space-y-3 text-center md:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider" id="statusBadge">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span id="statusText">體重健康正常 (Normal)</span>
+                        </div>
+
+                        <h3 id="headlineTip" class="text-lg font-bold text-white">體態極為理想，請繼續保持優良生活習慣！</h3>
+                        
+                        <p id="shortAdvice" class="text-xs text-gray-300 leading-relaxed">
+                            您的 BMI 處於黃金標準區間。體內脂肪率與肌肉質量維持著良好平衡，患有慢性與代謝疾病之風險極低。
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-gray-800/80 text-xs">
+                            <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-center md:text-left">
+                                <span class="text-gray-400 block text-[10px]">健康風險等級</span>
+                                <span id="riskLevel" class="font-bold text-emerald-400">極低 (Optimal)</span>
+                            </div>
+                            <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-center md:text-left">
+                                <span class="text-gray-400 block text-[10px]">基礎代謝 (BMR)</span>
+                                <span id="bmrEstimate" class="font-bold text-cyan-400 font-tech">1620 kcal</span>
+                            </div>
+                            <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-center md:text-left">
+                                <span class="text-gray-400 block text-[10px]">每日總消耗 (TDEE)</span>
+                                <span id="tdeeEstimate" class="font-bold text-purple-400 font-tech">2228 kcal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Highlighting Standard Cards -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-7">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-purple-400"></i> 成人 BMI 快速對照
+                        </h3>
+                        <span class="text-xs text-cyan-400 font-tech">實時數據連動高亮</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="standardGrid">
+                        <div id="row-underweight" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-blue-400">體重過輕</span>
+                                <i class="fa-solid fa-feather text-blue-400 text-xs"></i>
+                            </div>
+                            <div class="text-xs font-tech text-gray-300">&lt; 18.5</div>
+                            <div class="text-[10px] text-gray-400 mt-1">需補足優質蛋白與熱量</div>
+                        </div>
+
+                        <div id="row-normal" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-emerald-400">健康正常</span>
+                                <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
+                            </div>
+                            <div class="text-xs font-tech text-gray-300">18.5 ≤ BMI &lt; 24</div>
+                            <div class="text-[10px] text-gray-400 mt-1">黃金標準，規律運動維持</div>
+                        </div>
+
+                        <div id="row-overweight" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-amber-400">體重過重</span>
+                                <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xs"></i>
+                            </div>
+                            <div class="text-xs font-tech text-gray-300">24 ≤ BMI &lt; 27</div>
+                            <div class="text-[10px] text-gray-400 mt-1">控制精緻糖與總熱量赤字</div>
+                        </div>
+
+                        <div id="row-mild" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-orange-400">輕度肥胖</span>
+                                <i class="fa-solid fa-triangle-exclamation text-orange-400 text-xs"></i>
+                            </div>
+                            <div class="text-xs font-tech text-gray-300">27 ≤ BMI &lt; 30</div>
+                            <div class="text-[10px] text-gray-400 mt-1">建議每週有氧運動與減脂</div>
+                        </div>
+
+                        <div id="row-moderate" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-red-400">中度肥胖</span>
+                                <i class="fa-solid fa-circle-exclamation text-red-400 text-xs"></i>
+                            </div>
+                            <div class="text-xs font-tech text-gray-300">30 ≤ BMI &lt; 35</div>
+                            <div class="text-[10px] text-gray-400 mt-1">建議專業營養與運動介入</div>
+                        </div>
+
+                        <div id="row-severe" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-purple-400">重度肥胖</span>
+                                <i class="fa-solid fa-skull-crossbones text-purple-400 text-xs"></i>
+                            </div>
+                            <div class="text-xs font-tech text-gray-300">≥ 35</div>
+                            <div class="text-[10px] text-gray-400 mt-1">高健康風險，諮詢減重門診</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- 2. AI Prescription Section -->
+        <section class="glass-panel-glow rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-xl animate-bounce"></i>
+                        <h3 class="text-xl font-bold text-white tracking-wide">AI 全方位健康與深度處方診斷</h3>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">
+                        透過 Gemini AI 神經網路結合生理參數，運算最適合您的個人化健康處方
+                        <span class="ml-2 text-cyan-400/80 font-tech">｜ 診斷日期：<span id="reportDate">YYYY/MM/DD</span></span>
                     </p>
+                </div>
 
-                    <!-- Indicators Grid -->
-                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-gray-800/80 text-xs">
-                        <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-center md:text-left">
-                            <span class="text-gray-400 block text-[10px]">健康風險等級</span>
-                            <span id="riskLevel" class="font-bold text-emerald-400">極低 (Optimal)</span>
-                        </div>
-                        <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-center md:text-left">
-                            <span class="text-gray-400 block text-[10px]">基礎代謝 (BMR)</span>
-                            <span id="bmrEstimate" class="font-bold text-cyan-400 font-tech">1620 kcal</span>
-                        </div>
-                        <div class="bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-center md:text-left">
-                            <span class="text-gray-400 block text-[10px]">每日總消耗 (TDEE)</span>
-                            <span id="tdeeEstimate" class="font-bold text-purple-400 font-tech">2228 kcal</span>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <button onclick="generateAiPrescription()" id="aiBtn" 
+                        class="cyber-button text-gray-950 font-extrabold px-5 py-3 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm tracking-wider uppercase whitespace-nowrap w-full md:w-auto group border border-cyan-300/40">
+                        <i class="fa-solid fa-wand-magic-sparkles text-sm sm:text-base group-hover:scale-110 transition-transform"></i>
+                        <span class="font-bold whitespace-nowrap text-xs sm:text-sm">⚡ AI 智慧處方一鍵生成</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="glass-panel rounded-3xl p-6 sm:p-7">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-table-cells text-purple-400"></i> 成人 BMI 標準參考對照表 (衛福部 / WHO)
-                    </h3>
-                    <span class="text-xs text-gray-400">動態對照高亮</span>
+            <!-- AI Progress Bar -->
+            <div id="aiLoading" class="hidden mb-6 p-4 rounded-2xl bg-gray-900/90 border border-cyan-500/30">
+                <div class="flex items-center justify-between text-xs mb-2">
+                    <span class="text-cyan-400 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-circle-notch fa-spin text-sm"></i> Gemini AI 正在運算個人化生理指標與飲食處方中...
+                    </span>
+                    <span id="aiProgressText" class="font-tech text-cyan-400">0%</span>
                 </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="standardGrid">
-                    <!-- Underweight -->
-                    <div id="row-underweight" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-bold text-blue-400">體重過輕</span>
-                            <i class="fa-solid fa-feather text-blue-400 text-xs"></i>
-                        </div>
-                        <div class="text-xs font-tech text-gray-300">&lt; 18.5</div>
-                        <div class="text-[10px] text-gray-400 mt-1">需補足優質蛋白與熱量</div>
-                    </div>
-
-                    <!-- Normal -->
-                    <div id="row-normal" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-bold text-emerald-400">健康正常</span>
-                            <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
-                        </div>
-                        <div class="text-xs font-tech text-gray-300">18.5 ≤ BMI &lt; 24</div>
-                        <div class="text-[10px] text-gray-400 mt-1">黃金標準，規律運動維持</div>
-                    </div>
-
-                    <!-- Overweight -->
-                    <div id="row-overweight" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-bold text-amber-400">體重過重</span>
-                            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xs"></i>
-                        </div>
-                        <div class="text-xs font-tech text-gray-300">24 ≤ BMI &lt; 27</div>
-                        <div class="text-[10px] text-gray-400 mt-1">控制精緻糖與總熱量赤字</div>
-                    </div>
-
-                    <!-- Mild Obesity -->
-                    <div id="row-mild" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-bold text-orange-400">輕度肥胖</span>
-                            <i class="fa-solid fa-triangle-exclamation text-orange-400 text-xs"></i>
-                        </div>
-                        <div class="text-xs font-tech text-gray-300">27 ≤ BMI &lt; 30</div>
-                        <div class="text-[10px] text-gray-400 mt-1">建議每週有氧運動與減脂</div>
-                    </div>
-
-                    <!-- Moderate Obesity -->
-                    <div id="row-moderate" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-bold text-red-400">中度肥胖</span>
-                            <i class="fa-solid fa-circle-exclamation text-red-400 text-xs"></i>
-                        </div>
-                        <div class="text-xs font-tech text-gray-300">30 ≤ BMI &lt; 35</div>
-                        <div class="text-[10px] text-gray-400 mt-1">建議專業營養與運動介入</div>
-                    </div>
-
-                    <!-- Severe Obesity -->
-                    <div id="row-severe" class="p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all">
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-bold text-purple-400">重度肥胖</span>
-                            <i class="fa-solid fa-skull-crossbones text-purple-400 text-xs"></i>
-                        </div>
-                        <div class="text-xs font-tech text-gray-300">≥ 35</div>
-                        <div class="text-[10px] text-gray-400 mt-1">高健康風險，諮詢減重門診</div>
-                    </div>
+                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                    <div id="aiProgressBar" class="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 h-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
 
-        </section>
-
-        <section class="lg:col-span-12">
-            <div class="glass-panel-glow rounded-3xl p-6 sm:p-8 relative overflow-hidden">
-                
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+            <!-- Prescription Content Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5" id="prescriptionContainer">
+                <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between group">
                     <div>
-                        <div class="flex items-center gap-2.5">
-                            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-xl animate-bounce"></i>
-                            <h3 class="text-xl font-bold text-white tracking-wide">AI 全方位健康與深度處方診斷</h3>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-utensils text-base"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
+                                    個人化飲食策略
+                                    <i class="fa-solid fa-apple-whole text-emerald-400 text-xs"></i>
+                                </h4>
+                                <span class="text-[10px] text-emerald-400 block font-tech">NUTRITION STRATEGY</span>
+                            </div>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">
-                            透過 Gemini AI 神經網路結合生理參數，運算最適合您的個人化健康處方
-                            <span class="ml-2 text-cyan-400/80 font-tech">｜ 診斷日期：<span id="reportDate">YYYY/MM/DD</span></span>
+                        <p id="aiNutritionText" class="text-xs text-gray-300 leading-relaxed">
+                            點擊上方「⚡ AI 智慧處方一鍵生成」按鈕，AI 系統將自動根據您的 BMI、BMR、TDEE 計算巨量營養素比例與黃金飲食建議。
                         </p>
                     </div>
-
-                    <div class="flex items-center gap-3 no-print w-full md:w-auto">
-                        <button onclick="generateAiPrescription()" id="aiBtn" 
-                            class="cyber-button text-gray-950 font-extrabold px-5 py-3 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm tracking-wider uppercase whitespace-nowrap w-full md:w-auto group border border-cyan-300/40">
-                            <i class="fa-solid fa-wand-magic-sparkles text-sm sm:text-base group-hover:scale-110 transition-transform"></i>
-                            <span class="font-bold whitespace-nowrap text-xs sm:text-sm">⚡ AI 智慧處方一鍵生成</span>
-                        </button>
+                    <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-emerald-400 font-medium flex justify-between items-center">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-pie-chart text-[10px]"></i> 建議配比</span>
+                        <span id="macroRatio" class="font-tech">碳水50% | 蛋白25% | 脂25%</span>
                     </div>
                 </div>
 
-                <!-- AI Processing Progress Bar (Hidden by default) -->
-                <div id="aiLoading" class="hidden mb-6 p-4 rounded-2xl bg-gray-900/90 border border-cyan-500/30">
-                    <div class="flex items-center justify-between text-xs mb-2">
-                        <span class="text-cyan-400 font-medium flex items-center gap-2">
-                            <i class="fa-solid fa-circle-notch fa-spin text-sm"></i> Gemini AI 正在運算個人化生理指標與飲食處方中...
-                        </span>
-                        <span id="aiProgressText" class="font-tech text-cyan-400">0%</span>
+                <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/40 transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-dumbbell text-base"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
+                                    運動與訓練處方
+                                    <i class="fa-solid fa-person-running text-cyan-400 text-xs"></i>
+                                </h4>
+                                <span class="text-[10px] text-cyan-400 block font-tech">EXERCISE PRESCRIPTION</span>
+                            </div>
+                        </div>
+                        <p id="aiWorkoutText" class="text-xs text-gray-300 leading-relaxed">
+                            點擊生成後，AI 將依據您的年齡與生理狀態，為您精算心率燃脂區間、每週推薦運動頻率與訓練類型。
+                        </p>
                     </div>
-                    <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                        <div id="aiProgressBar" class="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 h-full w-0 transition-all duration-300"></div>
+                    <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-cyan-400 font-medium flex justify-between items-center">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-heart-pulse text-[10px]"></i> 燃脂心率</span>
+                        <span id="targetHeartRate" class="font-tech">115 - 145 bpm</span>
                     </div>
                 </div>
 
-                <!-- Prescription Content Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5" id="prescriptionContainer">
-                    
-                    <!-- Nutrition Strategy Card -->
-                    <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between group">
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-utensils text-base"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
-                                        個人化飲食策略
-                                        <i class="fa-solid fa-apple-whole text-emerald-400 text-xs"></i>
-                                    </h4>
-                                    <span class="text-[10px] text-emerald-400 block font-tech">NUTRITION STRATEGY</span>
-                                </div>
+                <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-moon text-base"></i>
                             </div>
-                            <p id="aiNutritionText" class="text-xs text-gray-300 leading-relaxed">
-                                點擊上方「⚡ AI 智慧處方一鍵生成」按鈕，AI 系統將自動根據您的 BMI、BMR、TDEE 計算巨量營養素比例與黃金飲食建議。
-                            </p>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
+                                    作息與生活型態
+                                    <i class="fa-solid fa-glass-water text-purple-400 text-xs"></i>
+                                </h4>
+                                <span class="text-[10px] text-purple-400 block font-tech">LIFESTYLE RECOVERY</span>
+                            </div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-emerald-400 font-medium flex justify-between items-center">
-                            <span class="flex items-center gap-1"><i class="fa-solid fa-pie-chart text-[10px]"></i> 建議配比</span>
-                            <span id="macroRatio" class="font-tech">碳水50% | 蛋白25% | 脂25%</span>
+                        <p id="aiLifestyleText" class="text-xs text-gray-300 leading-relaxed">
+                            評估睡眠週期、皮質醇壓力與水分補充計畫，幫助保持高基礎代謝率並預防脂肪堆積。
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-purple-400 font-medium flex justify-between items-center">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-droplet text-[10px]"></i> 每日飲水</span>
+                        <span id="waterIntake" class="font-tech">2,200 - 2,500 c.c.</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-pink-500/40 transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-shield-heart text-base"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
+                                    健康風險與追蹤
+                                    <i class="fa-solid fa-stethoscope text-pink-400 text-xs"></i>
+                                </h4>
+                                <span class="text-[10px] text-pink-400 block font-tech">HEALTH RISK ASSESSMENT</span>
+                            </div>
                         </div>
+                        <p id="aiRiskText" class="text-xs text-gray-300 leading-relaxed">
+                            即時預估慢性病潛在風險，提供體檢指標與腰圍腰臀比之追蹤建議。
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-pink-400 font-medium flex justify-between items-center">
+                        <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-[10px]"></i> 追蹤週期</span>
+                        <span id="followUpPeriod" class="font-tech">每 4 週量測</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PENULTIMATE SECTION (倒數第二個區塊): Quiz Challenge -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden" id="quizSection">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-graduation-cap text-gold text-2xl animate-bounce"></i>
+                        <h3 class="text-xl font-bold text-white tracking-wide">BMI 知識達人問答挑戰 (5 題大考驗)</h3>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">挑戰全對解鎖「NEO-HEALTH BMI 達人」勳章與歡呼特效！</p>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <span id="quizScoreText" class="text-sm font-tech text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/30">
+                        進度：<span id="currentQNum">1</span> / 5
+                    </span>
+                    <button onclick="resetQuiz()" class="text-xs text-gray-400 hover:text-white px-3 py-1 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-600 transition-all">
+                        <i class="fa-solid fa-rotate-left me-1"></i>重新挑戰
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Card Display -->
+            <div id="quizCard" class="bg-gray-900/80 p-6 rounded-2xl border border-gray-800 relative">
+                <div class="mb-4">
+                    <span class="text-xs font-semibold text-cyan-400 uppercase tracking-widest block mb-1" id="quizCategory">分類：基礎常識</span>
+                    <h4 class="text-base sm:text-lg font-bold text-gray-100" id="quizQuestion">
+                        1. 計算 BMI (身體質量指數) 的標準數學公式為何？
+                    </h4>
+                </div>
+
+                <!-- Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6" id="quizOptions">
+                    <!-- Dynamic rendering options -->
+                </div>
+
+                <!-- Feedback Text -->
+                <div id="quizFeedback" class="hidden p-4 rounded-xl text-xs font-medium leading-relaxed"></div>
+
+                <!-- Next Button -->
+                <div class="flex justify-end mt-4">
+                    <button id="nextQBtn" onclick="nextQuestion()" class="hidden cyber-button text-gray-950 font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2">
+                        <span>下一題</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Winner Badge Certificate (Hidden until full score) -->
+            <div id="winnerBadge" class="hidden mt-6 p-8 rounded-3xl bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-amber-500/20 border-2 border-yellow-400/80 text-center relative overflow-hidden shadow-[0_0_50px_rgba(251,191,36,0.3)]">
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"></div>
+                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 flex items-center justify-center text-gray-950 text-4xl shadow-xl shadow-amber-500/40 animate-pulse">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <span class="text-xs font-tech font-bold uppercase text-amber-400 tracking-widest block mb-1">HONORARY CERTIFICATE</span>
+                <h3 class="text-2xl font-black text-white tracking-wide mb-2">🎉 恭喜獲封「BMI 知識大師 / BMI 達人」！</h3>
+                <p class="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed mb-6">
+                    您已順利通過全部 5 道衛福部與 WHO 標準 BMI 觀念題，展現卓越的健康與體態管理知識！
+                </p>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-400/20 border border-yellow-400/50 text-yellow-300 text-xs font-tech font-bold">
+                    <i class="fa-solid fa-award text-base me-1"></i> 認證字號：NEO-HEALTH-BMI-EXPERT-2026
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. FINAL SECTION (最後一個區塊): WHO Guidelines & Ministry of Health Standard Grid -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute -left-16 -top-16 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 border-b border-gray-800/80 pb-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/30">
+                            <i class="fa-solid fa-globe text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                                世界衛生組織 (WHO) 衛教與公眾健康指南
+                            </h2>
+                            <p class="text-xs text-gray-400 mt-0.5">World Health Organization Global & Asian Physical Activity & Body Composition Guidance</p>
+                        </div>
+                    </div>
+                </div>
+                <span class="text-xs text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/30 font-tech">
+                    <i class="fa-solid fa-hospital me-1"></i> WHO 國際公衛權威指引
+                </span>
+            </div>
+
+            <!-- Expanded Grid containing WHO & MOH Classification Table -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- Card 1: WHO / MOH Full Classification Comparison Table -->
+                <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/40 transition-all space-y-3 lg:col-span-3">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <div class="flex items-center gap-2.5 text-cyan-400 font-bold text-sm">
+                            <i class="fa-solid fa-table-list text-base"></i>
+                            <span>衛福部 / WHO 成人 BMI 體位分級權威對照表</span>
+                        </div>
+                        <span class="text-[11px] text-gray-400 font-tech">單位：kg/m²</span>
                     </div>
 
-                    <!-- Exercise Prescription Card -->
-                    <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/40 transition-all flex flex-col justify-between group">
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-dumbbell text-base"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
-                                        運動與訓練處方
-                                        <i class="fa-solid fa-person-running text-cyan-400 text-xs"></i>
-                                    </h4>
-                                    <span class="text-[10px] text-cyan-400 block font-tech">EXERCISE PRESCRIPTION</span>
-                                </div>
-                            </div>
-                            <p id="aiWorkoutText" class="text-xs text-gray-300 leading-relaxed">
-                                點擊生成後，AI 將依據您的年齡與生理狀態，為您精算心率燃脂區間、每週推薦運動頻率與訓練類型。
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-cyan-400 font-medium flex justify-between items-center">
-                            <span class="flex items-center gap-1"><i class="fa-solid fa-heart-pulse text-[10px]"></i> 燃脂心率</span>
-                            <span id="targetHeartRate" class="font-tech">115 - 145 bpm</span>
-                        </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-gray-300">
+                            <thead class="text-[11px] uppercase bg-gray-950/80 text-gray-400 border-b border-gray-800">
+                                <tr>
+                                    <th class="py-2.5 px-3">體位類別</th>
+                                    <th class="py-2.5 px-3">臺灣衛福部標準 (MOH)</th>
+                                    <th class="py-2.5 px-3">WHO 國際標準</th>
+                                    <th class="py-2.5 px-3">WHO 亞太地區建議</th>
+                                    <th class="py-2.5 px-3">健康與代謝風險</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800/60 font-medium">
+                                <tr class="hover:bg-gray-800/30">
+                                    <td class="py-2.5 px-3 text-blue-400 font-bold">體重過輕</td>
+                                    <td class="py-2.5 px-3 font-tech">&lt; 18.5</td>
+                                    <td class="py-2.5 px-3 font-tech">&lt; 18.5</td>
+                                    <td class="py-2.5 px-3 font-tech">&lt; 18.5</td>
+                                    <td class="py-2.5 px-3 text-gray-400">營養不良、免疫力低下、骨質疏鬆</td>
+                                </tr>
+                                <tr class="hover:bg-gray-800/30 bg-emerald-500/5">
+                                    <td class="py-2.5 px-3 text-emerald-400 font-bold">健康正常</td>
+                                    <td class="py-2.5 px-3 font-tech text-emerald-300">18.5 ≤ BMI &lt; 24.0</td>
+                                    <td class="py-2.5 px-3 font-tech text-emerald-300">18.5 ≤ BMI &lt; 25.0</td>
+                                    <td class="py-2.5 px-3 font-tech text-emerald-300">18.5 ≤ BMI &lt; 23.0</td>
+                                    <td class="py-2.5 px-3 text-emerald-400">平均疾病風險最低（黃金體態）</td>
+                                </tr>
+                                <tr class="hover:bg-gray-800/30">
+                                    <td class="py-2.5 px-3 text-amber-400 font-bold">過重前兆</td>
+                                    <td class="py-2.5 px-3 font-tech">24.0 ≤ BMI &lt; 27.0</td>
+                                    <td class="py-2.5 px-3 font-tech">25.0 ≤ BMI &lt; 30.0</td>
+                                    <td class="py-2.5 px-3 font-tech">23.0 ≤ BMI &lt; 25.0</td>
+                                    <td class="py-2.5 px-3 text-amber-300">輕度升高，需注意腹部脂肪堆積</td>
+                                </tr>
+                                <tr class="hover:bg-gray-800/30">
+                                    <td class="py-2.5 px-3 text-orange-400 font-bold">輕度肥胖 (Class I)</td>
+                                    <td class="py-2.5 px-3 font-tech">27.0 ≤ BMI &lt; 30.0</td>
+                                    <td class="py-2.5 px-3 font-tech">30.0 ≤ BMI &lt; 35.0</td>
+                                    <td class="py-2.5 px-3 font-tech">25.0 ≤ BMI &lt; 30.0</td>
+                                    <td class="py-2.5 px-3 text-orange-300">中度升高，心血管與糖尿病風險增加</td>
+                                </tr>
+                                <tr class="hover:bg-gray-800/30">
+                                    <td class="py-2.5 px-3 text-red-400 font-bold">中度肥胖 (Class II)</td>
+                                    <td class="py-2.5 px-3 font-tech">30.0 ≤ BMI &lt; 35.0</td>
+                                    <td class="py-2.5 px-3 font-tech">35.0 ≤ BMI &lt; 40.0</td>
+                                    <td class="py-2.5 px-3 font-tech">≥ 30.0</td>
+                                    <td class="py-2.5 px-3 text-red-400">顯著高危，代謝徵候群與脂肪肝風險高</td>
+                                </tr>
+                                <tr class="hover:bg-gray-800/30">
+                                    <td class="py-2.5 px-3 text-purple-400 font-bold">重度肥胖 (Class III)</td>
+                                    <td class="py-2.5 px-3 font-tech">≥ 35.0</td>
+                                    <td class="py-2.5 px-3 font-tech">≥ 40.0</td>
+                                    <td class="py-2.5 px-3 font-tech">≥ 35.0</td>
+                                    <td class="py-2.5 px-3 text-purple-300">極高危險，建議門診醫學治療介入</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
 
-                    <!-- Lifestyle Card -->
-                    <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all flex flex-col justify-between group">
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-moon text-base"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
-                                        作息與生活型態
-                                        <i class="fa-solid fa-glass-water text-purple-400 text-xs"></i>
-                                    </h4>
-                                    <span class="text-[10px] text-purple-400 block font-tech">LIFESTYLE RECOVERY</span>
-                                </div>
-                            </div>
-                            <p id="aiLifestyleText" class="text-xs text-gray-300 leading-relaxed">
-                                評估睡眠週期、皮質醇壓力與水分補充計畫，幫助保持高基礎代謝率並預防脂肪堆積。
-                            </p>
+                <!-- Card 2: WHO Asian Population Cut-offs -->
+                <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 hover:border-amber-500/40 transition-all space-y-3">
+                    <div class="flex items-center gap-2.5 text-amber-400 font-bold text-sm">
+                        <i class="fa-solid fa-users text-base"></i>
+                        <span>WHO 亞太地區切點說明</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed border-t border-gray-800/80 pt-2.5">
+                        WHO 專家小組指證，**亞洲族群在相同 BMI 下，體脂肪比例通常高於歐美族群**，且內臟脂肪堆積與第 2 型糖尿病風險顯著偏高。因此亞太區應採用更嚴格的預警門檻：
+                    </p>
+                    <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                        <div class="flex justify-between text-amber-300 font-medium">
+                            <span>亞太過重門檻：</span>
+                            <span class="font-tech">BMI ≥ 23.0</span>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-purple-400 font-medium flex justify-between items-center">
-                            <span class="flex items-center gap-1"><i class="fa-solid fa-droplet text-[10px]"></i> 每日飲水</span>
-                            <span id="waterIntake" class="font-tech">2,200 - 2,500 c.c.</span>
+                        <div class="flex justify-between text-amber-400 font-medium">
+                            <span>亞太肥胖門檻：</span>
+                            <span class="font-tech">BMI ≥ 27.5</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Health Risk Card -->
-                    <div class="bg-gray-900/70 p-5 rounded-2xl border border-gray-800 hover:border-pink-500/40 transition-all flex flex-col justify-between group">
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-shield-heart text-base"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-sm text-gray-100 flex items-center gap-1.5">
-                                        健康風險與追蹤
-                                        <i class="fa-solid fa-stethoscope text-pink-400 text-xs"></i>
-                                    </h4>
-                                    <span class="text-[10px] text-pink-400 block font-tech">HEALTH RISK ASSESSMENT</span>
-                                </div>
-                            </div>
-                            <p id="aiRiskText" class="text-xs text-gray-300 leading-relaxed">
-                                即時預估慢性病潛在風險，提供體檢指標與腰圍腰臀比之追蹤建議。
-                            </p>
+                <!-- Card 3: Health Risks -->
+                <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 hover:border-pink-500/40 transition-all space-y-3">
+                    <div class="flex items-center gap-2.5 text-pink-400 font-bold text-sm">
+                        <i class="fa-solid fa-heart-pulse text-base"></i>
+                        <span>高 BMI 主要健康風險 (WHO Warning)</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed border-t border-gray-800/80 pt-2.5">
+                        WHO 警示，體重過重與肥胖是全球第 5 大死亡風險因素。BMI 升高將顯著增加下列慢性疾病威脅：
+                    </p>
+                    <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside">
+                        <li><strong class="text-gray-200">心血管疾病：</strong>高血壓、冠狀動脈心臟病與中風</li>
+                        <li><strong class="text-gray-200">代謝疾病：</strong>第 2 型糖尿病與胰島素阻抗</li>
+                        <li><strong class="text-gray-200">骨骼肌肉：</strong>退化性關節炎與膝關節負擔過重</li>
+                        <li><strong class="text-gray-200">惡性腫瘤：</strong>大腸癌、乳癌、子宮內膜癌風險上升</li>
+                    </ul>
+                </div>
+
+                <!-- Card 4: Exercise Recommendations -->
+                <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all space-y-3">
+                    <div class="flex items-center gap-2.5 text-emerald-400 font-bold text-sm">
+                        <i class="fa-solid fa-person-walking-luggage text-base"></i>
+                        <span>WHO 身體活動與運動建議</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed border-t border-gray-800/80 pt-2.5">
+                        WHO 指出「動得不夠」是全球代謝疾病上升的主因之一。建議 18–64 歲成年人每週需達成：
+                    </p>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                            <strong>中等強度有氧：</strong>每週 150 - 300 分鐘（快走、慢跑、游泳）
                         </div>
-                        <div class="mt-4 pt-3 border-t border-gray-800/80 text-[11px] text-pink-400 font-medium flex justify-between items-center">
-                            <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-[10px]"></i> 追蹤週期</span>
-                            <span id="followUpPeriod" class="font-tech">每 4 週量測</span>
+                        <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                            <strong>肌力強化訓練：</strong>每週至少 2 天涵蓋大肌群之阻力運動
                         </div>
                     </div>
+                </div>
+
+                <!-- Card 5: Limitations of BMI -->
+                <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all space-y-3">
+                    <div class="flex items-center gap-2.5 text-purple-400 font-bold text-sm">
+                        <i class="fa-solid fa-circle-exclamation text-base"></i>
+                        <span>BMI 臨床使用之侷限性</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed border-t border-gray-800/80 pt-2.5">
+                        WHO 強調 BMI 僅為整體族群篩檢指標，**無法區分肌肉量與體脂肪**。下列族群需結合腰圍或體脂率評估：
+                    </p>
+                    <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside">
+                        <li><strong class="text-purple-300">運動員與健身族群：</strong>肌肉密度高，BMI 超標但體脂極低</li>
+                        <li><strong class="text-purple-300">高齡長者：</strong>肌肉流失（肌少症），BMI 正常但體脂過高</li>
+                        <li><strong class="text-purple-300">孕婦與發育中兒童：</strong>需要專屬百分位對照表估算</li>
+                    </ul>
+                </div>
+
+                <!-- Card 6: Waist Circumference -->
+                <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800 hover:border-cyan-500/40 transition-all space-y-3 md:col-span-2 lg:col-span-2">
+                    <div class="flex items-center gap-2.5 text-cyan-400 font-bold text-sm">
+                        <i class="fa-solid fa-tape text-base"></i>
+                        <span>腰圍與腹部肥胖（Central Obesity）警告</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed border-t border-gray-800/80 pt-2.5">
+                        WHO 與衛福部均證實「內臟脂肪（Visceral Fat）」與心血管疾病風險極度相關。即使 BMI 正常，若腰圍超出標準仍屬於高風險腹部肥胖：
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 text-xs pt-1">
+                        <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-center">
+                            <span class="text-gray-400 block text-[10px] mb-0.5">男性腰圍警示上限</span>
+                            <span class="font-tech text-cyan-400 font-bold text-sm">≥ 90 cm (35.4 in)</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-pink-500/10 border border-pink-500/20 text-center">
+                            <span class="text-gray-400 block text-[10px] mb-0.5">女性腰圍警示上限</span>
+                            <span class="font-tech text-pink-400 font-bold text-sm">≥ 80 cm (31.5 in)</span>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </section>
+
     </main>
 
     <footer class="mt-10 text-center space-y-2 pb-6">
@@ -605,6 +810,209 @@
         let bmr = 1620;
         let tdee = 2228;
 
+        // Quiz State
+        const quizQuestions = [
+            {
+                category: "基礎觀念",
+                q: "1. 計算 BMI (身體質量指數) 的標準公式為何？",
+                options: [
+                    "體重(kg) ÷ 身高(m)",
+                    "體重(kg) ÷ [身高(m)]²",
+                    "身高(cm) - 體重(kg)",
+                    "體重(kg) × 2 ÷ 身高(cm)"
+                ],
+                ans: 1,
+                explain: "正確答案！BMI 公式為：體重 (公斤) 除以 身高 (公尺) 的平方。"
+            },
+            {
+                category: "衛福部與 WHO 標準",
+                q: "2. 依衛福部與 WHO 亞太標準，成人『正常健康』的 BMI 區間為？",
+                options: [
+                    "15.0 ≤ BMI < 18.5",
+                    "18.5 ≤ BMI < 24.0",
+                    "24.0 ≤ BMI < 27.0",
+                    "27.0 ≤ BMI < 30.0"
+                ],
+                ans: 1,
+                explain: "正確答案！18.5 ≤ BMI < 24 為黃金正常範圍；24–27 為過重，27 以上為肥胖。"
+            },
+            {
+                category: "健身迷思與體脂肪",
+                q: "3. 健身選手肌肉非常發達，量測出 BMI > 28，下列何者正確？",
+                options: [
+                    "一定是重度肥胖，必須立刻節食",
+                    "BMI 未能區分肌肉與脂肪，需結合體脂率與腰圍綜合判斷",
+                    "代表健康狀況極差",
+                    "BMI 無法應用於任何男性"
+                ],
+                ans: 1,
+                explain: "正確答案！肌肉密度高於脂肪，肌肉量高的運動員 BMI 偏高但體脂極低，並非肥胖。"
+            },
+            {
+                category: "WHO 族群與限制",
+                q: "4. 下列哪一個族群『不適合』直接以一般成人 BMI 標準評估體態？",
+                options: [
+                    "28 歲辦公室上班族",
+                    "40 歲一般男女性",
+                    "孕婦與發育中兒童",
+                    "50 歲規律慢跑者"
+                ],
+                ans: 2,
+                explain: "正確答案！孕婦因胎兒與羊水重量、發育中兒童因生長發育階段，皆有專屬生長曲線對照。"
+            },
+            {
+                category: "健康風險與代謝",
+                q: "5. 若 BMI 長期 > 30 達到肥胖等級，最可能顯著增加下列何種慢性病風險？",
+                options: [
+                    "近視與散光",
+                    "第 2 型糖尿病、高血壓與心血管疾病",
+                    "急性骨折",
+                    "過敏性鼻炎"
+                ],
+                ans: 1,
+                explain: "正確答案！肥胖會大幅增加胰島素阻抗、心血管負擔與慢性發炎風險。"
+            }
+        ];
+
+        let currentQIndex = 0;
+        let scoreCount = 0;
+        let answeredCurrent = false;
+
+        function renderQuestion() {
+            answeredCurrent = false;
+            const qData = quizQuestions[currentQIndex];
+            document.getElementById('currentQNum').innerText = currentQIndex + 1;
+            document.getElementById('quizCategory').innerText = `分類：${qData.category}`;
+            document.getElementById('quizQuestion').innerText = qData.q;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+
+            qData.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "p-3.5 rounded-xl bg-gray-800/80 border border-gray-700/80 text-gray-200 text-xs text-left font-medium hover:border-cyan-400 hover:bg-cyan-500/10 transition-all flex items-center gap-3";
+                btn.innerHTML = `<span class="w-6 h-6 rounded-lg bg-gray-900 flex items-center justify-center font-tech text-cyan-400 text-xs shrink-0">${String.fromCharCode(65 + idx)}</span> <span>${optText}</span>`;
+                btn.onclick = () => checkAnswer(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.className = "hidden p-4 rounded-xl text-xs font-medium leading-relaxed";
+            document.getElementById('nextQBtn').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIdx) {
+            if (answeredCurrent) return;
+            answeredCurrent = true;
+
+            const qData = quizQuestions[currentQIndex];
+            const feedback = document.getElementById('quizFeedback');
+            const optionsBtns = document.getElementById('quizOptions').children;
+
+            if (selectedIdx === qData.ans) {
+                scoreCount++;
+                optionsBtns[selectedIdx].className = "p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs text-left font-medium flex items-center gap-3";
+                feedback.className = "p-4 rounded-xl text-xs font-medium leading-relaxed bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 block";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 me-1.5"></i> <strong>答對了！</strong> ${qData.explain}`;
+            } else {
+                optionsBtns[selectedIdx].className = "p-3.5 rounded-xl bg-red-500/20 border border-red-400 text-red-300 text-xs text-left font-medium flex items-center gap-3";
+                optionsBtns[qData.ans].className = "p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs text-left font-medium flex items-center gap-3";
+                feedback.className = "p-4 rounded-xl text-xs font-medium leading-relaxed bg-red-500/15 border border-red-500/30 text-red-300 block";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-400 me-1.5"></i> <strong>答錯囉！</strong> ${qData.explain}`;
+            }
+
+            document.getElementById('nextQBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQIndex < quizQuestions.length - 1) {
+                currentQIndex++;
+                renderQuestion();
+            } else {
+                showQuizSummary();
+            }
+        }
+
+        function showQuizSummary() {
+            document.getElementById('quizCard').classList.add('hidden');
+            if (scoreCount === 5) {
+                document.getElementById('winnerBadge').classList.remove('hidden');
+                triggerVictoryCheer();
+            } else {
+                const quizSection = document.getElementById('quizSection');
+                const tryAgainDiv = document.createElement('div');
+                tryAgainDiv.id = "tryAgainPanel";
+                tryAgainDiv.className = "bg-gray-900/80 p-6 rounded-2xl border border-gray-800 text-center space-y-4";
+                tryAgainDiv.innerHTML = `
+                    <div class="text-3xl text-cyan-400 font-tech font-bold">${scoreCount} / 5 題</div>
+                    <p class="text-xs text-gray-300">表現不錯！差一點點就能解鎖全對「BMI 達人」榮譽勳章，再試一次吧！</p>
+                    <button onclick="resetQuiz()" class="cyber-button text-gray-950 font-bold px-6 py-2 rounded-xl text-xs">重新挑戰</button>
+                `;
+                quizSection.appendChild(tryAgainDiv);
+            }
+        }
+
+        function resetQuiz() {
+            currentQIndex = 0;
+            scoreCount = 0;
+            document.getElementById('quizCard').classList.remove('hidden');
+            document.getElementById('winnerBadge').classList.add('hidden');
+            const tryAgain = document.getElementById('tryAgainPanel');
+            if (tryAgain) tryAgain.remove();
+            renderQuestion();
+        }
+
+        // Web Audio Victory Sound Effect
+        function playVictorySound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99]; // C5, E5, G5, C6...
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.1 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + idx * 0.1);
+                    osc.stop(ctx.currentTime + idx * 0.1 + 0.35);
+                });
+            } catch (e) {
+                console.log("Audio not supported or blocked");
+            }
+        }
+
+        function triggerVictoryCheer() {
+            playVictorySound();
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 80,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 }
+                    });
+                    confetti({
+                        particleCount: 80,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 }
+                    });
+                }, 250);
+            }
+        }
+
+        // Gender & Synced Controls
         function setGender(g) {
             gender = g;
             const maleBtn = document.getElementById('genderMale');
@@ -626,18 +1034,14 @@
         function syncFromSlider(type) {
             const slider = document.getElementById(`${type}Slider`);
             const input = document.getElementById(`${type}Input`);
-            if (slider && input) {
-                input.value = slider.value;
-            }
+            if (slider && input) input.value = slider.value;
             updateValues();
         }
 
         function syncFromInput(type) {
             const slider = document.getElementById(`${type}Slider`);
             const input = document.getElementById(`${type}Input`);
-            if (slider && input) {
-                slider.value = input.value;
-            }
+            if (slider && input) slider.value = input.value;
             updateValues();
         }
 
@@ -647,19 +1051,16 @@
             weight = parseFloat(document.getElementById('weightInput')?.value) || 68;
             const activity = parseFloat(document.getElementById('activitySelect')?.value) || 1.375;
 
-            // Ideal Weight Range (18.5 - 23.9 * m^2)
             const hInMeters = height / 100;
             const minIdealWeight = (18.5 * hInMeters * hInMeters).toFixed(1);
             const maxIdealWeight = (23.9 * hInMeters * hInMeters).toFixed(1);
             const idealRangeEl = document.getElementById('idealWeightRange');
             if (idealRangeEl) idealRangeEl.innerText = `${minIdealWeight} - ${maxIdealWeight} kg`;
 
-            // Calculate BMI
             bmi = (weight / (hInMeters * hInMeters)).toFixed(1);
             const bmiScoreEl = document.getElementById('bmiScore');
             if (bmiScoreEl) bmiScoreEl.innerText = bmi;
 
-            // Calculate BMR (Mifflin-St Jeor Formula) & TDEE
             bmr = (10 * weight) + (6.25 * height) - (5 * age);
             bmr = gender === 'male' ? Math.round(bmr + 5) : Math.round(bmr - 161);
             tdee = Math.round(bmr * activity);
@@ -669,32 +1070,25 @@
             const tdeeEl = document.getElementById('tdeeEstimate');
             if (tdeeEl) tdeeEl.innerText = `${tdee} kcal`;
 
-            // Target Heart Rate for fat loss (55% - 75% HR max)
             const maxHr = 220 - age;
             const targetMin = Math.round(maxHr * 0.55);
             const targetMax = Math.round(maxHr * 0.75);
             const targetHrEl = document.getElementById('targetHeartRate');
             if (targetHrEl) targetHrEl.innerText = `${targetMin} - ${targetMax} bpm`;
 
-            // Daily Water Recommendation (30-35 cc per kg)
             const waterMin = Math.round(weight * 30);
             const waterMax = Math.round(weight * 35);
             const waterEl = document.getElementById('waterIntake');
             if (waterEl) waterEl.innerText = `${waterMin.toLocaleString()} - ${waterMax.toLocaleString()} c.c.`;
 
-            // Position Vertical Indicator Needle
-            // Vertical Track range: Y=202 (BMI 10.0 bottom) to Y=18 (BMI 35.0 top)
             const clampedBmi = Math.min(Math.max(parseFloat(bmi), 10), 35);
-            const minY = 202; // Position at bottom (BMI 10)
-            const maxY = 18;  // Position at top (BMI 35)
+            const minY = 202; 
+            const maxY = 18;  
             const posY = minY - ((clampedBmi - 10) / (35 - 10)) * (minY - maxY);
 
             const indicatorEl = document.getElementById('verticalIndicator');
-            if (indicatorEl) {
-                indicatorEl.style.transform = `translateY(${posY}px)`;
-            }
+            if (indicatorEl) indicatorEl.style.transform = `translateY(${posY}px)`;
 
-            // Categorize and Render UI text & standard highlighting
             categorizeAndRender(parseFloat(bmi));
         }
 
@@ -705,13 +1099,10 @@
             const shortAdvice = document.getElementById('shortAdvice');
             const riskLevel = document.getElementById('riskLevel');
 
-            // Reset table highlighting
             const rows = ['underweight', 'normal', 'overweight', 'mild', 'moderate', 'severe'];
             rows.forEach(r => {
                 const el = document.getElementById(`row-${r}`);
-                if (el) {
-                    el.className = "p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all opacity-50";
-                }
+                if (el) el.className = "p-3 rounded-xl bg-gray-900/50 border border-gray-800/80 transition-all opacity-50";
             });
 
             let activeRow = '';
@@ -726,7 +1117,6 @@
                     riskLevel.innerText = "輕度 (骨質/免疫力注意)";
                     riskLevel.className = "font-bold text-blue-400";
                 }
-
             } else if (bmiVal >= 18.5 && bmiVal < 24) {
                 activeRow = 'row-normal';
                 if (badge) badge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
@@ -737,7 +1127,6 @@
                     riskLevel.innerText = "極低 (Optimal Health)";
                     riskLevel.className = "font-bold text-emerald-400";
                 }
-
             } else if (bmiVal >= 24 && bmiVal < 27) {
                 activeRow = 'row-overweight';
                 if (badge) badge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30";
@@ -748,7 +1137,6 @@
                     riskLevel.innerText = "中等 (注意代謝指標)";
                     riskLevel.className = "font-bold text-amber-400";
                 }
-
             } else if (bmiVal >= 27 && bmiVal < 30) {
                 activeRow = 'row-mild';
                 if (badge) badge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-400 border border-orange-500/30";
@@ -759,7 +1147,6 @@
                     riskLevel.innerText = "偏高 (需進行控制)";
                     riskLevel.className = "font-bold text-orange-400";
                 }
-
             } else if (bmiVal >= 30 && bmiVal < 35) {
                 activeRow = 'row-moderate';
                 if (badge) badge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30";
@@ -770,7 +1157,6 @@
                     riskLevel.innerText = "高危險 (建議專業介入)";
                     riskLevel.className = "font-bold text-red-400";
                 }
-
             } else {
                 activeRow = 'row-severe';
                 if (badge) badge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-400 border border-purple-500/30";
@@ -783,11 +1169,8 @@
                 }
             }
 
-            // Highlight grid element
             const el = document.getElementById(activeRow);
-            if (el) {
-                el.className = "p-3 rounded-xl bg-cyan-500/10 border border-cyan-400 shadow-lg shadow-cyan-500/20 transition-all opacity-100 scale-[1.03]";
-            }
+            if (el) el.className = "p-3 rounded-xl bg-cyan-500/10 border border-cyan-400 shadow-lg shadow-cyan-500/20 transition-all opacity-100 scale-[1.03]";
         }
 
         async function generateAiPrescription() {
@@ -802,7 +1185,6 @@
             }
             if (aiLoading) aiLoading.classList.remove('hidden');
 
-            // Simulate progress animation
             let progress = 0;
             const interval = setInterval(() => {
                 progress += 25;
@@ -811,12 +1193,8 @@
                 if (progressText) progressText.innerText = `${progress}%`;
             }, 100);
 
-            try {
-                await new Promise(r => setTimeout(r, 500));
+            setTimeout(() => {
                 fallbackLocalAiEngine();
-            } catch (err) {
-                fallbackLocalAiEngine();
-            } finally {
                 clearInterval(interval);
                 if (progressBar) progressBar.style.width = '100%';
                 if (progressText) progressText.innerText = '100%';
@@ -828,7 +1206,7 @@
                         aiBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     }
                 }, 300);
-            }
+            }, 600);
         }
 
         function fallbackLocalAiEngine() {
@@ -877,25 +1255,12 @@
             if (macroEl) macroEl.innerText = macro;
             const followUpEl = document.getElementById('followUpPeriod');
             if (followUpEl) followUpEl.innerText = followUp;
-            renderAiResult(nutr, work, life, risk);
+            
+            document.getElementById('aiNutritionText').innerText = nutr;
+            document.getElementById('aiWorkoutText').innerText = work;
+            document.getElementById('aiLifestyleText').innerText = life;
+            document.getElementById('aiRiskText').innerText = risk;
         }
-
-        function renderAiResult(nutr, work, life, risk) {
-            const nutrEl = document.getElementById('aiNutritionText');
-            if (nutrEl) nutrEl.innerText = nutr;
-            const workEl = document.getElementById('aiWorkoutText');
-            if (workEl) workEl.innerText = work;
-            const lifeEl = document.getElementById('aiLifestyleText');
-            if (lifeEl) lifeEl.innerText = life;
-            const riskEl = document.getElementById('aiRiskText');
-            if (riskEl) riskEl.innerText = risk;
-        }
-
-        window.setGender = setGender;
-        window.syncFromSlider = syncFromSlider;
-        window.syncFromInput = syncFromInput;
-        window.updateValues = updateValues;
-        window.generateAiPrescription = generateAiPrescription;
 
         function updateClock() {
             const now = new Date();
@@ -915,6 +1280,7 @@
             updateClock();
             setInterval(updateClock, 1000);
             updateValues();
+            renderQuestion();
         };
     </script>
 </body>
